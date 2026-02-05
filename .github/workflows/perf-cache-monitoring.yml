@@ -48,12 +48,12 @@ jobs:
           run: |
             echo $STEP_STATUS
             if [ "$STEP_STATUS" == "success" ]; then
-              echo "Cache tests passed" > message.txt
+              echo "✅Cache tests passed." > message.txt
               curl -s -X POST 'https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage' \
               -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=$(cat message.txt)&reply_to_message_id=${{ secrets.TELEGRAM_TOPIC_MESSAGE_ID }}" > /dev/null 2>&1
             else
 
-              echo "Cache tests failed" > message.txt
+              echo "❌Cache tests failed." > message.txt
               curl -s -X POST 'https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage' \
               -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=$(cat message.txt)&reply_to_message_id=${{ secrets.TELEGRAM_TOPIC_MESSAGE_ID }}" > /dev/null 2>&1
             fi;
