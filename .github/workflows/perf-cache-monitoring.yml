@@ -46,6 +46,7 @@ jobs:
           env:
             STEP_STATUS: ${{ steps.playwright_test.outcome }}
           run: |
+            echo $STEP_STATUS
             if [ "$STEP_STATUS" == "success" ]; then
               echo "Cache tests failed" > message.txt
               curl -s -X POST 'https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage' \
