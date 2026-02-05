@@ -28,6 +28,7 @@ jobs:
           run: npx playwright install --with-deps chromium
           
         - name: Run Playwright test
+          id: playwright_test
           run: npx playwright test tests/playwright-tests/cache-checker.spec.ts
           
         - name: Upload results
@@ -39,6 +40,15 @@ jobs:
               results.json
               playwright-report/
               test-logs.txt  # Optional: Include the log file in artifacts for download/archive
+
+        - name: send message
+          if: always()
+          run: |
+            if [ $steps.playwright_test.success() ]; then
+              echo yes
+            else
+              echo no
+            fi;
         
         # - name: FINAL VALIDATION & SUMMARY TEST REPORT
         #   if: always()
