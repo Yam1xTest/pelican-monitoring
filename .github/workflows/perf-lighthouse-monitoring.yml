@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '30 0 * * *'
     - cron: '30 8 * * *'
-  # push:
+  push:
   #   branches:
   #     - feature/*
 
@@ -67,6 +67,8 @@ jobs:
             if [ -f ./lh-errors.txt ]; then
               cat ./lh-errors.txt
               echo "================================"
+              curl -s -X POST 'https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage' \
+              -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=$(cat ./lh-errors.txt)&reply_to_message_id=${{ secrets.TELEGRAM_TOPIC_MESSAGE_ID }}"
               exit 1
             else
               echo "✅ All Lighthouse checks passed."
