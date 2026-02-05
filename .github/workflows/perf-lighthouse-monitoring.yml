@@ -65,11 +65,17 @@ jobs:
           run: |
             echo "===== LIGHTHOUSE TEST SUMMARY ====="
             if [ -f ./lh-errors.txt ]; then
-              cat ./lh-errors.txt
+              cat ./lh-errors.txt > message.txt
+              cat message.txt
               echo "================================"
+              
               curl -s -X POST 'https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage' \
-              -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=$(cat ./lh-errors.txt)&reply_to_message_id=${{ secrets.TELEGRAM_TOPIC_MESSAGE_ID }}"
-              exit 1
+              -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=$(cat message.txt)&reply_to_message_id=${{ secrets.TELEGRAM_TOPIC_MESSAGE_ID }}"
+              exit 1  
             else
-              echo "✅ All Lighthouse checks passed."
+              echo "✅ All Lighthouse checks passed." > message.txt
+              cat message.txt
+
+              curl -s -X POST 'https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage' \
+              -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=$(cat message.txt)&reply_to_message_id=${{ secrets.TELEGRAM_TOPIC_MESSAGE_ID }}"
             fi
