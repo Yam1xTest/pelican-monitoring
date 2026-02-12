@@ -5,25 +5,12 @@ on:
     - cron: '0 * * * *'
 
   push:
-    branches:
-env:
-  WORKFLOW_RUN_LINK: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-  
+
 jobs:
   validate-robots:
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:  
-      - uses: actions/checkout@v5
-      - uses: ./.github/actions/send-message
-        id: foo
-        with:
-          message: 'Mona the Octocat'
-      - run: echo random-number "$RANDOM_NUMBER"
-        shell: bash
-        env:
-          RANDOM_NUMBER: ${{ steps.foo.outputs.random-number }}
-
       - name: Validate robots.txt & TEST SUMMARY
         id: robots_txt_validation
         run: |
@@ -43,18 +30,20 @@ jobs:
           EOF
           echo "Comparing with expected content..."
           if ! diff -u expected_robots.txt robots.txt; then
-            echo "❌ robots.txt does not match the expected content." > message.txt
-            cat message.txt
-            echo ${{ env.WORKFLOW_RUN_LINK }} >> message.txt
-            curl -s -X POST 'https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage' \
-            -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=$(cat message.txt)&reply_to_message_id=${{ secrets.TELEGRAM_TOPIC_MESSAGE_ID }}" > /dev/null 2>&1
+            echo "❌ robots.txt does not match the expected content."
             exit 1
           fi
-          echo "✅ robots.txt matches expected content." > message.txt
-          cat message.txt
-          echo ${{ env.WORKFLOW_RUN_LINK }} >> message.txt
-          curl -s -X POST 'https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage' \
-          -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}&text=$(cat message.txt)&reply_to_message_id=${{ secrets.TELEGRAM_TOPIC_MESSAGE_ID }}" > /dev/null 2>&1
+          echo "✅ robots.txt matches expected content."
+
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/send-message
+        with:
+          successful-message: Успех
+          failure-message: Провал
+          test-status: ${{ steps.robots_txt_validation.outcome }}
+          telegram-token: ${{ secrets.TELEGRAM_TOKEN }}
+          telegram-chat-id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          telegram-topic-message-id: ${{ secrets.TELEGRAM_TOPIC_MESSAGE_ID }}
 
   jmeter-tests:
     runs-on: ubuntu-24.04
