@@ -35,7 +35,7 @@ runs:
         -d "chat_id=${INPUT_TELEGRAM_CHAT_ID}&text=$(cat message.txt)&reply_to_message_id=${INPUT_TELEGRAM_TOPIC_MESSAGE_ID}" > /dev/null 2>&1
       shell: bash
       env:
-        INPUT_TEST_STATUS: ${{ inputs.message }}
+        INPUT_TEST_STATUS: ${{ inputs.test-status }}
         INPUT_SUCCESSFUL_MESSAGE: ${{ inputs.successful-message }}
         INPUT_FAILURE_MESSAGE: ${{ inputs.failure-message }}
         INPUT_TELEGRAM_TOKEN: ${{ inputs.telegram-token }}
