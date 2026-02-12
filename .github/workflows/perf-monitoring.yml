@@ -6,7 +6,6 @@ on:
 
   push:
     branches:
-      - feature/*
 env:
   WORKFLOW_RUN_LINK: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
   
