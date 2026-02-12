@@ -1,31 +1,44 @@
 name: 'Send Message'
 description: 'Sends message to telegram chat'
 inputs:
-  message:  # id of input
-    description: 'Who to greet'
+  successful-message:
     required: true
-    default: 'World'
-outputs:
-  random-number:
-    description: "Random number"
-    value: ${{ steps.random-number-generator.outputs.random-number }}
+    
+  failure-message:
+    required: true
+
+  test-status:
+    required: true
+
+  telegram-token:
+    required: true
+
+  telegram-chat-id:
+    required: true
+
+  telegram-topic-message-id:
+    required: true
+  
 runs:
   using: "composite"
   steps:
-    - name: Set Greeting
-      run: echo "Hello $INPUT_MESSAGE."
+    - name: Send message
+      run: |
+        if [ "$STEP_STATUS" == "success" ]; then
+          echo $INPUT_SUCCESSFUL_MESSAGE > message.txt
+        else
+          echo $INPUT_FAILURE_MESSAGE > message.txt
+        fi;
+        
+        echo "Ссылка на последний запуск: $WORKFLOW_RUN_LINK" > message.txt
+        curl -s -X POST "https://api.telegram.org/bot${INPUT_TELEGRAM_TOKEN}/sendMessage" \
+        -d "chat_id=${INPUT_TELEGRAM_CHAT_ID}&text=$(cat message.txt)&reply_to_message_id=${INPUT_TELEGRAM_TOPIC_MESSAGE_ID}"
       shell: bash
       env:
-        INPUT_MESSAGE: ${{ inputs.message }}
-
-    - name: Random Number Generator
-      id: random-number-generator
-      run: echo "random-number=$(echo $RANDOM)" >> $GITHUB_OUTPUT
-      shell: bash
-
-    - name: Set GitHub Path
-      run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
-      shell: bash
-      env:
-        GITHUB_ACTION_PATH: ${{ github.action_path }}
-
+        INPUT_TEST_STATUS: ${{ inputs.message }}
+        INPUT_SUCCESSFUL_MESSAGE: ${{ inputs.successful-message }}
+        INPUT_FAILURE_MESSAGE: ${{ inputs.failure-message }}
+        INPUT_TELEGRAM_TOKEN: ${{ inputs.telegram-token }}
+        INPUT_TELEGRAM_CHAT_ID: ${{ inputs.telegram-chat-id }}
+        INPUT_TELEGRAM_TOPIC_MESSAGE_ID: ${{ inputs.telegram-topic-message-id }}
+        WORKFLOW_RUN_LINK: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
