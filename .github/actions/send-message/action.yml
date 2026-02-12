@@ -27,7 +27,7 @@ runs:
         if [ "$STEP_STATUS" == "success" ]; then
           echo $INPUT_SUCCESSFUL_MESSAGE > message.txt
         else
-          echo $INPUT_FAILURE_MESSAGE > message.txt
+          echo $INPUT_FAILURE_MESSAGE >> message.txt
         fi;
         
         echo "Ссылка на последний запуск: $WORKFLOW_RUN_LINK" > message.txt
