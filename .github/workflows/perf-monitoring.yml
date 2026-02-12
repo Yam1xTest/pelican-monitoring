@@ -5,8 +5,8 @@ on:
     - cron: '0 * * * *'
 
   push:
-  #   branches:
-  #     - feature/*
+    branches:
+      - feature/*
 env:
   WORKFLOW_RUN_LINK: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
   
@@ -14,7 +14,16 @@ jobs:
   validate-robots:
     runs-on: ubuntu-24.04
     timeout-minutes: 2
-    steps:
+    steps:  
+      - uses: ./.github/actions/send-message
+        id: foo
+        with:
+          message: 'Mona the Octocat'
+      - run: echo random-number "$RANDOM_NUMBER"
+        shell: bash
+        env:
+          RANDOM_NUMBER: ${{ steps.foo.outputs.random-number }}
+
       - name: Validate robots.txt & TEST SUMMARY
         id: robots_txt_validation
         run: |
