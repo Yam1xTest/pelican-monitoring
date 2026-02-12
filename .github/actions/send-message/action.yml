@@ -24,7 +24,7 @@ runs:
   steps:
     - name: Send message
       run: |
-        if [ "$STEP_STATUS" == "success" ]; then
+        if [ "$INPUT_TEST_STATUS" == "success" ]; then
           echo $INPUT_SUCCESSFUL_MESSAGE > message.txt
         else
           echo $INPUT_FAILURE_MESSAGE > message.txt
